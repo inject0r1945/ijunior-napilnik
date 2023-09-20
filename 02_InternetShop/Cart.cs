@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace NapilnikStore
 {
     class Cart
     {
-        private List<ItemPosition> _cart;
-        private Warehouse _warehouse;
+        private Dictionary<string, ItemPosition> _cart;
+        private Shop _shop;
 
-        public Cart(Warehouse warehouse)
+        public Cart(Shop shop)
         {
-            _warehouse = warehouse;
-            _cart = new List<ItemPosition>();
+            _shop = shop;
+            _cart = new Dictionary<string, ItemPosition>();
         }
 
         public void Show()
         {
             Console.WriteLine($"Товары в корзине:\n");
 
-            foreach (ItemPosition currentCartPosition in _cart)
+            foreach (ItemPosition currentCartPosition in _cart.Values)
                 Console.WriteLine($"{currentCartPosition.Item.Name}: {currentCartPosition.Count} шт.");
         }
 
         public void Add(Good good, int count)
         {
-            bool isAvailable = _warehouse.IsAvailableGood(good, count, out int countAvailable);
+            bool isAvailable = _shop.IsAvailableGood(good, count, out int countAvailable);
 
             if (!isAvailable)
             {
@@ -46,31 +47,22 @@ namespace NapilnikStore
                 return null;
 
             Order order = new Order();
-            ReserveCart();
+            ReserveItems();
 
             return order;
         }
 
         private void Merge(ItemPosition itemPosition)
         {
-            int existItemPositionindex = _cart.IndexOf(itemPosition);
-
-            if (existItemPositionindex == -1)
-            {
-                _cart.Add(itemPosition);
-            }
+            if (_cart.ContainsKey(itemPosition.Item.Name))
+                _cart[itemPosition.Item.Name] = itemPosition;
             else
-            {
-                _cart[existItemPositionindex] = itemPosition;
-            }
+                _cart.Add(itemPosition.Item.Name, itemPosition);
         }
 
-        private void ReserveCart()
+        private void ReserveItems()
         {
-            foreach (ItemPosition cartItemPosition in _cart)
-            {
-                _warehouse.TakeItemPosition(cartItemPosition);
-            }
+            _shop.Reserve(_cart.Values.ToList());
         }
     }
 }

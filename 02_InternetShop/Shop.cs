@@ -20,9 +20,22 @@ namespace NapilnikStore
 
         public Cart Cart()
         {
-            Cart newCart = new Cart(_warehouse);
+            Cart cart = new Cart(this);
 
-            return newCart;
+            return cart;
+        }
+
+        public bool IsAvailableGood(Good good, int count, out int countAvailable)
+        {
+            return _warehouse.IsAvailableGood(good, count, out countAvailable);
+        }
+
+        public void Reserve(List<ItemPosition> itemPositions)
+        {
+            foreach (ItemPosition itemPosition in itemPositions)
+            {
+                _warehouse.TakeItemPosition(itemPosition);
+            }
         }
     }
 }

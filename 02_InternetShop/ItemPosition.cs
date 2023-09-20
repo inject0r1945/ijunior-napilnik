@@ -1,7 +1,11 @@
-﻿namespace NapilnikStore
+﻿using System;
+
+namespace NapilnikStore
 {
     class ItemPosition
     {
+        private LinqSpecification<int> _equalOrGreatZeroSpecification  = new IntEqualOrGreatZeroSpecification();
+
         public Good Item { get; private set; }
 
         public int Count { get; private set; }
@@ -16,14 +20,19 @@
 
         public void Increase(int count)
         {
-            ValidateFunctions.ValidateArgumentLargeOrEqualZero(count);
+            if (!_equalOrGreatZeroSpecification.IsSatisfiedBy(count))
+                throw new ArgumentOutOfRangeException(nameof(count));
+
             Count += count;
         }
 
         public void Decrease(int count)
         {
-            ValidateFunctions.ValidateArgumentLargeOrEqualZero(count);
-            Count -= count;
+            if (!_equalOrGreatZeroSpecification.IsSatisfiedBy(count))
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            if (_equalOrGreatZeroSpecification.IsSatisfiedBy(count))
+                Count -= count;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace NapilnikStore
     class Warehouse
     {
         private List<ItemPosition> _itemPositions;
+        private LinqSpecification<int> _equalOrGreatZeroSpecification = new IntEqualOrGreatZeroSpecification();
 
         public Warehouse()
         {
@@ -59,7 +60,10 @@ namespace NapilnikStore
 
         public ItemPosition TakeItemPosition(Good good, int count)
         {
-            ValidateFunctions.ValidateArgumentLargeOrEqualZero(count);
+            if (!_equalOrGreatZeroSpecification.IsSatisfiedBy(count))
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
 
             ItemPosition warehouseItemPosotion = GetItemPosition(good);
 
