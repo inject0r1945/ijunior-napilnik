@@ -4,18 +4,23 @@ using System.Text;
 
 namespace NapilnikLogger
 {
-    public class DayLogPolicy : ILogPolicy
+    class DaysLimitLogWriter : ILogger
     {
-        private List<DayOfWeek> _allowedDaysOfWeek;
+        private ILogger _logger;
+        private DayOfWeek[] _allowedDaysOfWeek;
 
-        public DayLogPolicy(DayOfWeek allowedDayOfWeek)
+        public DaysLimitLogWriter(ILogger logger, params DayOfWeek[] allowedDaysOfWeek)
         {
-            _allowedDaysOfWeek = new List<DayOfWeek>() { allowedDayOfWeek };
+            _logger = logger;
+            _allowedDaysOfWeek = allowedDaysOfWeek;
         }
 
-        public DayLogPolicy(List<DayOfWeek> allowedDaysOfWeek)
+        public void Log(string message)
         {
-            _allowedDaysOfWeek = allowedDaysOfWeek;
+            if (!IsAllowedWriteLog())
+                return;
+
+            _logger.Log(message);
         }
 
         public bool IsAllowedWriteLog()

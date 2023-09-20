@@ -14,14 +14,15 @@ namespace NapilnikLogger
             ILogger fileLogWriter = new FileLogWriter();
             Pathfinder filePathfinder = new Pathfinder(fileLogWriter);
 
-            ILogPolicy fridayLogPolicy = new DayLogPolicy(DayOfWeek.Friday);
-            Pathfinder consoleFridayPathfinder = new Pathfinder(consoleLogWriter, fridayLogPolicy);
+            ILogger fridayLimitConsoleLogWriter = new DaysLimitLogWriter(consoleLogWriter, DayOfWeek.Friday);
+            Pathfinder consoleFridayPathfinder = new Pathfinder(fridayLimitConsoleLogWriter);
 
-            Pathfinder fileFridayPathfinder = new Pathfinder(fileLogWriter, fridayLogPolicy);
+            ILogger fridayLimitFileLogWriter = new DaysLimitLogWriter(fileLogWriter, DayOfWeek.Friday);
+            Pathfinder fileFridayPathfinder = new Pathfinder(fridayLimitFileLogWriter);
 
-            Pathfinder customPathFinder = new Pathfinder(new List<ILogger>() { consoleLogWriter, fileFridayPathfinder });
+            Pathfinder customPathFinder = new Pathfinder(new List<ILogger>() { consoleLogWriter, fridayLimitFileLogWriter });
 
-            customPathFinder.Log("Привет");
+            customPathFinder.Find();
         }
     }
 }
