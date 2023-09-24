@@ -7,30 +7,17 @@ namespace NapilnikLogger
 {
     public class Pathfinder
     {
-        private List<ILogger> _loggers;
-
-        public Pathfinder(List<ILogger> loggers)
-        {
-            _loggers = loggers;
-        }
+        private ILogger _logger;
 
         public Pathfinder(ILogger logger)
         {
-            _loggers = new List<ILogger>() { logger };
+            _logger =  logger;
         }
 
         public void Find()
         {
             string message = "Hello, World";
-            Log(message);
-        }
-
-        private void Log(string message)
-        {
-            foreach(ILogger logger in _loggers)
-            {
-                logger.Log(message);
-            }
+            _logger.Log(message);
         }
     }
 }
