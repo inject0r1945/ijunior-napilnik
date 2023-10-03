@@ -20,7 +20,8 @@ namespace NapilnikLogger
             ILogger fridayLimitFileLogWriter = new DaysLimitLogWriter(fileLogWriter, DayOfWeek.Friday);
             Pathfinder fileFridayPathfinder = new Pathfinder(fridayLimitFileLogWriter);
 
-            ILogger customLogger = new ConsoleLogWriter(fridayLimitFileLogWriter);
+            ILogger customLogger = new GroupLogger(consoleLogWriter, fridayLimitFileLogWriter);
+
             Pathfinder customPathFinder = new Pathfinder(customLogger);
 
             customPathFinder.Find();

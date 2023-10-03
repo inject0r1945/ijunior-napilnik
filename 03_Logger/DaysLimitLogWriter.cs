@@ -7,18 +7,12 @@ namespace NapilnikLogger
     class DaysLimitLogWriter : ILogger
     {
         private ILogger _logger;
-        private DayOfWeek[] _allowedDaysOfWeek;
+        private DayOfWeek _allowedDayOfWeek;
 
-        public DaysLimitLogWriter(ILogger logger)
+        public DaysLimitLogWriter(ILogger logger, DayOfWeek allowedDayOfWeek)
         {
             _logger = logger;
-            _allowedDaysOfWeek = (DayOfWeek[])Enum.GetValues(typeof(DayOfWeek));
-        }
-
-        public DaysLimitLogWriter(ILogger logger, params DayOfWeek[] allowedDaysOfWeek)
-        {
-            _logger = logger;
-            _allowedDaysOfWeek = allowedDaysOfWeek;
+            _allowedDayOfWeek = allowedDayOfWeek;
         }
 
         public void Log(string message)
@@ -31,11 +25,8 @@ namespace NapilnikLogger
 
         public bool CanWrite()
         {
-            foreach (DayOfWeek allowedDayOfWeek in _allowedDaysOfWeek)
-            {
-                if (DateTime.Now.DayOfWeek == allowedDayOfWeek)
-                    return true;
-            }
+            if (DateTime.Now.DayOfWeek == _allowedDayOfWeek)
+                return true;
 
             return false;
         }
