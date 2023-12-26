@@ -5,14 +5,16 @@ using System.Text;
 
 namespace NapilnikStore
 {
-    class Cart
+    public class Cart
     {
         private Dictionary<string, ItemPosition> _cart;
-        private Shop _shop;
+        private IGoodReserve _goodReserver;
+        private IGoodAvailable _itemAvailableChecker;
 
-        public Cart(Shop shop)
+        public Cart(IGoodReserve goodReserver, IGoodAvailable itemAvailableChecker)
         {
-            _shop = shop;
+            _goodReserver = goodReserver;
+            _itemAvailableChecker = itemAvailableChecker;
             _cart = new Dictionary<string, ItemPosition>();
         }
 
@@ -26,7 +28,7 @@ namespace NapilnikStore
 
         public void Add(Good good, int count)
         {
-            bool isAvailable = _shop.IsAvailableGood(good, count, out int countAvailable);
+            bool isAvailable = _itemAvailableChecker.IsAvailableGood(good, count, out int countAvailable);
 
             if (!isAvailable)
             {
@@ -62,7 +64,7 @@ namespace NapilnikStore
 
         private void ReserveItems()
         {
-            _shop.Reserve(_cart.Values.ToList());
+            _goodReserver.Reserve(_cart.Values.ToList());
         }
     }
 }

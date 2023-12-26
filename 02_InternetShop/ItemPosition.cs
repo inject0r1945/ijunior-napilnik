@@ -2,7 +2,7 @@
 
 namespace NapilnikStore
 {
-    class ItemPosition
+    public class ItemPosition
     {
         private LinqSpecification<int> _equalOrGreatZeroSpecification  = new IntEqualOrGreatZeroSpecification();
 

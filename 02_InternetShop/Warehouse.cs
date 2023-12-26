@@ -1,56 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NapilnikStore
 {
-    class Warehouse
+    public class Warehouse : IGoodAvailable
     {
         private List<ItemPosition> _itemPositions;
+        private Dictionary<Good, int> _availableGoods;
         private LinqSpecification<int> _equalOrGreatZeroSpecification = new IntEqualOrGreatZeroSpecification();
 
         public Warehouse()
         {
             _itemPositions = new List<ItemPosition>();
+            _availableGoods = new Dictionary<Good, int>();
+        }
+
+        public bool IsAvailableGood(Good good, int count, out int countAvailable)
+        {
+            bool isExistsGood = _availableGoods.TryGetValue(good, out countAvailable);
+
+            return isExistsGood && countAvailable >= count;
         }
 
         public void Show()
         {
             Console.WriteLine($"Количество товаров на складе:\n");
 
-            foreach (ItemPosition currentItemPosition in _itemPositions)
-                Console.WriteLine($"{currentItemPosition.Item.Name}: {currentItemPosition.Count} шт.");
+            foreach (KeyValuePair<Good, int> goodKeyValuePair in _availableGoods)
+                Console.WriteLine($"{goodKeyValuePair.Key.Name}: {goodKeyValuePair.Value} шт.");
         }
 
         public void Delive(Good good, int count)
         {
-            ItemPosition itemPositionForDelieve = GetItemPosition(good);
 
-            if (itemPositionForDelieve == null)
+            if (_availableGoods.ContainsKey(good))
             {
-                itemPositionForDelieve = new ItemPosition(good, count);
-                _itemPositions.Add(itemPositionForDelieve);
+                _availableGoods[good] += count;
             }
             else
             {
-                itemPositionForDelieve.Increase(count);
+                _availableGoods[good] = count;
             }
-        }
-
-        public bool IsAvailableGood(Good good, int count, out int availableCount)
-        {
-            ItemPosition itemPosition = GetItemPosition(good);
-
-            if (itemPosition == null)
-            {
-                availableCount = 0;
-                return false;
-            }
-
-            availableCount = itemPosition.Count;
-
-            return availableCount >= count;
         }
 
         public ItemPosition TakeItemPosition(ItemPosition itemPosition)
@@ -65,22 +56,17 @@ namespace NapilnikStore
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
 
-            ItemPosition warehouseItemPosotion = GetItemPosition(good);
+            bool isAvailableGood = _availableGoods.TryGetValue(good, out int goodAvailableCount);
 
-            if (warehouseItemPosotion == null)
+            if (!isAvailableGood)
                 throw new ArgumentOutOfRangeException($"Товар '{good.Name}' отсутствует на складе");
 
-            if (warehouseItemPosotion.Count < count)
+            if (goodAvailableCount < count)
                 throw new ArgumentOutOfRangeException($"Не хватает нужного количества товара '{good.Name}'");
 
-            warehouseItemPosotion.Decrease(count);
+            _availableGoods[good] -= count;
 
             return new ItemPosition(good, count);
-        }
-
-        private ItemPosition GetItemPosition(Good good)
-        {
-            return _itemPositions.FirstOrDefault(x => x.Item.Name == good.Name);
         }
     }
 }

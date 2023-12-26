@@ -1,6 +1,6 @@
 ﻿namespace NapilnikStore
 {
-    class Good
+    public class Good
     {
         public string Name { get; private set; }
 

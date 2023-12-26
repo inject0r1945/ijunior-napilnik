@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NapilnikStore
 {
-    class Order
+    public class Order
     {
         private Random _randomGenerator = new Random();
         private int _minOrderNumber = 1000;
